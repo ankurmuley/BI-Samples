@@ -1,0 +1,2028 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns:cl="http://schemas.microsoft.com/sqlserver/reporting/2010/01/componentdefinition" xmlns:am="http://schemas.microsoft.com/sqlserver/reporting/authoringmetadata">
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportID>b574c384-0b10-495b-b639-c3c007595821</rd:ReportID>
+  <am:AuthoringMetadata>
+    <am:CreatedBy>
+      <am:Name>PBIRB</am:Name>
+      <am:Version>15.7.1815.334</am:Version>
+    </am:CreatedBy>
+    <am:UpdatedBy>
+      <am:Name>PBIRB</am:Name>
+      <am:Version>15.7.1819.28</am:Version>
+    </am:UpdatedBy>
+    <am:LastModifiedTimestamp>2026-07-01T17:51:23.2379121Z</am:LastModifiedTimestamp>
+  </am:AuthoringMetadata>
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="PROD_CFP_Workspace_Cogitate_Dashboard">
+      <rd:SecurityType>None</rd:SecurityType>
+      <ConnectionProperties>
+        <DataProvider>PBIDATASET</DataProvider>
+        <ConnectString>Data Source=pbiazure://api.powerbi.com/;Identity Provider="https://login.microsoftonline.com/organizations, https://analysis.windows.net/powerbi/api, f0b72488-7082-488a-a7e8-eada97bd842d";Initial Catalog=sobe_wowvirtualserver-a3132530-218c-4c7b-a6ac-f43fa85d3490;Integrated Security=ClaimsToken</ConnectString>
+      </ConnectionProperties>
+      <rd:DataSourceID>b50446f2-c6a7-43c3-8559-b14ea6914cc2</rd:DataSourceID>
+      <rd:PowerBIWorkspaceName>PROD_CFP_Workspace</rd:PowerBIWorkspaceName>
+      <rd:PowerBIDatasetName>Cogitate_Dashboard</rd:PowerBIDatasetName>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="DSCompanyCoverageState">
+      <Query>
+        <DataSourceName>PROD_CFP_Workspace_Cogitate_Dashboard</DataSourceName>
+        <CommandText>="DEFINE" &amp; vbCrLf &amp;
+"    VAR ParamCompany = """ &amp; Parameters!Company.Value &amp; """" &amp; vbCrLf &amp;
+"    VAR ParamState = """ &amp; Parameters!State.Value &amp; """" &amp; vbCrLf &amp;
+"    VAR ParamLOB = """ &amp; Parameters!LOB.Value &amp; """" &amp; vbCrLf &amp;
+"    VAR ParamUnderwriter = """ &amp; Parameters!Underwriter.Value &amp; """" &amp; vbCrLf &amp;
+"    VAR ParamCarrier = """ &amp; Parameters!Carrier.Value &amp; """" &amp; vbCrLf &amp;
+"    VAR ParamAgency = """ &amp; Parameters!Agency.Value &amp; """" &amp; vbCrLf &amp;
+"    VAR StartDate = DATE(" &amp; Year(Parameters!StartDate.Value) &amp; "," &amp; Month(Parameters!StartDate.Value) &amp; "," &amp; Day(Parameters!StartDate.Value) &amp; ")" &amp; vbCrLf &amp;
+"    VAR EndDate = DATE(" &amp; Year(Parameters!EndDate.Value) &amp; "," &amp; Month(Parameters!EndDate.Value) &amp; "," &amp; Day(Parameters!EndDate.Value) &amp; ")" &amp; vbCrLf &amp;
+"" &amp; vbCrLf &amp;
+"EVALUATE" &amp; vbCrLf &amp;
+"SUMMARIZECOLUMNS (" &amp; vbCrLf &amp;
+"    golddimpolicy[clientCode]," &amp; vbCrLf &amp;
+"    golddimstate[stateCode]," &amp; vbCrLf &amp;
+"" &amp; vbCrLf &amp;
+"    FILTER ( ALL ( golddimpolicy[clientCode] ),           NOT ISBLANK ( golddimpolicy[clientCode] ) &amp;&amp; ( ParamCompany     = ""All"" || ParamCompany     = """" || golddimpolicy[clientCode]           = ParamCompany ) )," &amp; vbCrLf &amp;
+"    FILTER ( ALL ( golddimstate[stateCode] ),            NOT ISBLANK ( golddimstate[stateCode] )   &amp;&amp; ( ParamState       = ""All"" || ParamState       = """" || golddimstate[stateCode]            = ParamState ) )," &amp; vbCrLf &amp;
+"    FILTER ( ALL ( golddimpolicy[lobDesc] ),             NOT ISBLANK ( golddimpolicy[lobDesc] )    &amp;&amp; ( ParamLOB         = ""All"" || ParamLOB         = """" || golddimpolicy[lobDesc]             = ParamLOB ) )," &amp; vbCrLf &amp;
+"    FILTER ( ALL ( golddimunderwriter[underwriterName] ), NOT ISBLANK ( golddimunderwriter[underwriterName] ) &amp;&amp; ( ParamUnderwriter = ""All"" || ParamUnderwriter = """" || golddimunderwriter[underwriterName] = ParamUnderwriter ) )," &amp; vbCrLf &amp;
+"    FILTER ( ALL ( golddimcarrier[carrierCode] ),        NOT ISBLANK ( golddimcarrier[carrierCode] )   &amp;&amp; ( ParamCarrier     = ""All"" || ParamCarrier     = """" || golddimcarrier[carrierCode]        = ParamCarrier ) )," &amp; vbCrLf &amp;
+"    FILTER ( ALL ( golddimagency[agencyName] ),                                                          ParamAgency      = ""All"" || ParamAgency      = """" || golddimagency[agencyName]          = ParamAgency )," &amp; vbCrLf &amp;
+"    FILTER ( 'DEP factpolicytransaction', 'DEP factpolicytransaction'[recordSource] = ""versions"" &amp;&amp; 'DEP factpolicytransaction'[transactionStatus] = ""Committed"" &amp;&amp; 'DEP factpolicytransaction'[transactionDate] &gt;= StartDate &amp;&amp; 'DEP factpolicytransaction'[transactionDate] &lt;= EndDate )," &amp; vbCrLf &amp;
+"" &amp; vbCrLf &amp;
+"    ""NewBusinessCount""," &amp; vbCrLf &amp;
+"        COALESCE ( CALCULATE ( DISTINCTCOUNT ( 'DEP factpolicytransaction'[policyNumber] ), 'DEP factpolicytransaction'[recordSource] = ""versions"", 'DEP factpolicytransaction'[transactionNumber] = 0, 'DEP factpolicytransaction'[transactionType] = ""New Business"", 'DEP factpolicytransaction'[transactionStatus] = ""Committed"", 'DEP factpolicytransaction'[transactionDate] &gt;= StartDate, 'DEP factpolicytransaction'[transactionDate] &lt;= EndDate ), 0 )," &amp; vbCrLf &amp;
+"" &amp; vbCrLf &amp;
+"    ""RenewalCount""," &amp; vbCrLf &amp;
+"        COALESCE ( CALCULATE ( DISTINCTCOUNT ( 'DEP factpolicytransaction'[policyNumber] ), 'DEP factpolicytransaction'[recordSource] = ""versions"", 'DEP factpolicytransaction'[transactionType] = ""Renewal"", 'DEP factpolicytransaction'[transactionStatus] = ""Committed"", 'DEP factpolicytransaction'[transactionDate] &gt;= StartDate, 'DEP factpolicytransaction'[transactionDate] &lt;= EndDate ), 0 )," &amp; vbCrLf &amp;
+"" &amp; vbCrLf &amp;
+"    ""CancelledCount""," &amp; vbCrLf &amp;
+"        VAR PoliciesInCurrentContext = CALCULATETABLE ( VALUES ( 'DEP factpolicytransaction'[policyNumber] ), 'DEP factpolicytransaction'[recordSource] = ""versions"", 'DEP factpolicytransaction'[transactionStatus] = ""Committed"", 'DEP factpolicytransaction'[transactionDate] &gt;= StartDate, 'DEP factpolicytransaction'[transactionDate] &lt;= EndDate )" &amp; vbCrLf &amp;
+"        RETURN COALESCE ( COUNTROWS ( FILTER ( PoliciesInCurrentContext, VAR CurrentPolicy = 'DEP factpolicytransaction'[policyNumber] VAR GlobalMaxTxnNumber = CALCULATE ( MAX ( 'DEP factpolicytransaction'[transactionNumber] ), ALL ( 'DEP factpolicytransaction' ), 'DEP factpolicytransaction'[policyNumber] = CurrentPolicy, 'DEP factpolicytransaction'[recordSource] = ""versions"", 'DEP factpolicytransaction'[transactionStatus] = ""Committed"", 'DEP factpolicytransaction'[transactionDate] &gt;= StartDate, 'DEP factpolicytransaction'[transactionDate] &lt;= EndDate ) VAR IsCancelled = CALCULATE ( COUNTROWS ( 'DEP factpolicytransaction' ), ALL ( 'DEP factpolicytransaction' ), 'DEP factpolicytransaction'[policyNumber] = CurrentPolicy, 'DEP factpolicytransaction'[recordSource] = ""versions"", 'DEP factpolicytransaction'[transactionNumber] = GlobalMaxTxnNumber, 'DEP factpolicytransaction'[policyStatus] = ""Policy Cancelled"", 'DEP factpolicytransaction'[transactionStatus] = ""Committed"" ) RETURN NOT ISBLANK ( IsCancelled ) &amp;&amp; IsCancelled &gt; 0 ) ), 0 )," &amp; vbCrLf &amp;
+"" &amp; vbCrLf &amp;
+"    ""GrossPremiumWritten""," &amp; vbCrLf &amp;
+"        COALESCE ( CALCULATE ( SUM ( 'DEP factpolicytransaction'[writtenPremium] ), FILTER ( 'DEP factpolicytransaction', 'DEP factpolicytransaction'[recordSource] = ""versions"" &amp;&amp; ( ISBLANK ( 'DEP factpolicytransaction'[transactionType] ) || ( 'DEP factpolicytransaction'[transactionType] &lt;&gt; ""Cancellation"" &amp;&amp; 'DEP factpolicytransaction'[transactionType] &lt;&gt; ""Cancellation - ProRate"" ) ) ), 'DEP factpolicytransaction'[transactionStatus] = ""Committed"", 'DEP factpolicytransaction'[transactionDate] &gt;= StartDate, 'DEP factpolicytransaction'[transactionDate] &lt;= EndDate ), 0 )," &amp; vbCrLf &amp;
+"" &amp; vbCrLf &amp;
+"    ""PremiumsCancelled""," &amp; vbCrLf &amp;
+"        COALESCE ( CALCULATE ( SUM ( 'DEP factpolicytransaction'[writtenPremium] ), 'DEP factpolicytransaction'[recordSource] = ""versions"", 'DEP factpolicytransaction'[transactionType] IN { ""Cancellation"", ""Cancellation - ProRate"" }, 'DEP factpolicytransaction'[transactionStatus] = ""Committed"", 'DEP factpolicytransaction'[transactionDate] &gt;= StartDate, 'DEP factpolicytransaction'[transactionDate] &lt;= EndDate ), 0 )," &amp; vbCrLf &amp;
+"" &amp; vbCrLf &amp;
+"    ""NetPremiumWritten""," &amp; vbCrLf &amp;
+"        COALESCE ( CALCULATE ( SUM ( 'DEP factpolicytransaction'[writtenPremium] ), 'DEP factpolicytransaction'[recordSource] = ""versions"", 'DEP factpolicytransaction'[transactionStatus] = ""Committed"", 'DEP factpolicytransaction'[transactionDate] &gt;= StartDate, 'DEP factpolicytransaction'[transactionDate] &lt;= EndDate ), 0 )," &amp; vbCrLf &amp;
+"" &amp; vbCrLf &amp;
+"    ""TermPremium""," &amp; vbCrLf &amp;
+"        COALESCE ( CALCULATE ( SUM ( 'DEP factpolicytransaction'[termPremium] ), 'DEP factpolicytransaction'[recordSource] = ""versions"", 'DEP factpolicytransaction'[policyStatus] = ""Policy In Force"", 'DEP factpolicytransaction'[transactionStatus] = ""Committed"", 'DEP factpolicytransaction'[transactionDate] &gt;= StartDate, 'DEP factpolicytransaction'[transactionDate] &lt;= EndDate ), 0 )," &amp; vbCrLf &amp;
+"" &amp; vbCrLf &amp;
+"    ""TotalInforcePolicies""," &amp; vbCrLf &amp;
+"        COALESCE ( CALCULATE ( DISTINCTCOUNT ( 'DEP factpolicytransaction'[policyNumber] ), 'DEP factpolicytransaction'[recordSource] = ""versions"", 'DEP factpolicytransaction'[policyStatus] = ""Policy In Force"", 'DEP factpolicytransaction'[transactionStatus] = ""Committed"", 'DEP factpolicytransaction'[transactionDate] &gt;= StartDate, 'DEP factpolicytransaction'[transactionDate] &lt;= EndDate ), 0 )," &amp; vbCrLf &amp;
+"" &amp; vbCrLf &amp;
+"    ""AvgTermMonths""," &amp; vbCrLf &amp;
+"        COALESCE ( CALCULATE ( AVERAGEX ( 'DEP factpolicytransaction', DATEDIFF ( 'DEP factpolicytransaction'[policyEffectiveDate], 'DEP factpolicytransaction'[policyExpiryDate], MONTH ) ), 'DEP factpolicytransaction'[recordSource] = ""versions"", 'DEP factpolicytransaction'[transactionStatus] = ""Committed"", 'DEP factpolicytransaction'[transactionDate] &gt;= StartDate, 'DEP factpolicytransaction'[transactionDate] &lt;= EndDate ), 0 )," &amp; vbCrLf &amp;
+"" &amp; vbCrLf &amp;
+"    ""AvgInforcePremium""," &amp; vbCrLf &amp;
+"        VAR InforcePrem = CALCULATE ( SUM ( 'DEP factpolicytransaction'[termPremium] ), 'DEP factpolicytransaction'[recordSource] = ""versions"", 'DEP factpolicytransaction'[policyStatus] = ""Policy In Force"", 'DEP factpolicytransaction'[transactionStatus] = ""Committed"", 'DEP factpolicytransaction'[transactionDate] &gt;= StartDate, 'DEP factpolicytransaction'[transactionDate] &lt;= EndDate )" &amp; vbCrLf &amp;
+"        VAR InforcePolicies = CALCULATE ( DISTINCTCOUNT ( 'DEP factpolicytransaction'[policyNumber] ), 'DEP factpolicytransaction'[recordSource] = ""versions"", 'DEP factpolicytransaction'[policyStatus] = ""Policy In Force"", 'DEP factpolicytransaction'[transactionStatus] = ""Committed"", 'DEP factpolicytransaction'[transactionDate] &gt;= StartDate, 'DEP factpolicytransaction'[transactionDate] &lt;= EndDate )" &amp; vbCrLf &amp;
+"        RETURN DIVIDE ( InforcePrem, InforcePolicies, 0 )," &amp; vbCrLf &amp;
+"" &amp; vbCrLf &amp;
+"    ""EarnedPremiums""," &amp; vbCrLf &amp;
+"        VAR GrainPolicies = CALCULATETABLE ( VALUES ( 'DEP factpolicytransaction'[policyNumber] )," &amp; vbCrLf &amp;
+"                'DEP factpolicytransaction'[recordSource] = ""versions""," &amp; vbCrLf &amp;
+"                'DEP factpolicytransaction'[transactionStatus] = ""Committed""," &amp; vbCrLf &amp;
+"                'DEP factpolicytransaction'[transactionDate] &gt;= StartDate," &amp; vbCrLf &amp;
+"                'DEP factpolicytransaction'[transactionDate] &lt;= EndDate," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimpolicy[clientCode] ),           ParamCompany     = ""All"" || ParamCompany     = """" || golddimpolicy[clientCode]           = ParamCompany )," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimstate[stateCode] ),            ParamState       = ""All"" || ParamState       = """" || golddimstate[stateCode]            = ParamState )," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimpolicy[lobDesc] ),             ParamLOB         = ""All"" || ParamLOB         = """" || golddimpolicy[lobDesc]             = ParamLOB )," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimunderwriter[underwriterName] ), ParamUnderwriter = ""All"" || ParamUnderwriter = """" || golddimunderwriter[underwriterName] = ParamUnderwriter )," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimcarrier[carrierCode] ),        ParamCarrier     = ""All"" || ParamCarrier     = """" || golddimcarrier[carrierCode]        = ParamCarrier )," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimagency[agencyName] ),          ParamAgency      = ""All"" || ParamAgency      = """" || golddimagency[agencyName]          = ParamAgency )" &amp; vbCrLf &amp;
+"        )" &amp; vbCrLf &amp;
+"        RETURN COALESCE ( CALCULATE ( SUMX ( FILTER ( 'DEP factcoveragepremium', 'DEP factcoveragepremium'[recordSource] = ""versions"" &amp;&amp; NOT ISBLANK ( 'DEP factcoveragepremium'[transactionEffectiveDate] ) &amp;&amp; 'DEP factcoveragepremium'[transactionEffectiveDate] &lt;= EndDate ), VAR CurrentPolicy = 'DEP factcoveragepremium'[policyNumber] VAR CurrentCov = 'DEP factcoveragepremium'[coverageName] VAR TxnEff = 'DEP factcoveragepremium'[transactionEffectiveDate] VAR TxnNum = 'DEP factcoveragepremium'[transactionNumber] VAR TxnDate = 'DEP factcoveragepremium'[transactionDate] VAR TxnType = 'DEP factcoveragepremium'[transactionType] VAR PolStatus = 'DEP factcoveragepremium'[policyStatus] VAR ThisPPD = IF ( ISBLANK ( 'DEP factcoveragepremium'[premiumPerDay] ), 0, 'DEP factcoveragepremium'[premiumPerDay] ) VAR PolExp = 'DEP factcoveragepremium'[policyExpiryDate] VAR NextTxnEff = CALCULATE ( MIN ( 'DEP factcoveragepremium'[transactionEffectiveDate] ), FILTER ( ALL ( 'DEP factcoveragepremium' ), 'DEP factcoveragepremium'[recordSource] = ""versions"" &amp;&amp; 'DEP factcoveragepremium'[policyNumber] = CurrentPolicy &amp;&amp; 'DEP factcoveragepremium'[coverageName] = CurrentCov &amp;&amp; ( 'DEP factcoveragepremium'[transactionEffectiveDate] &gt; TxnEff || ( 'DEP factcoveragepremium'[transactionEffectiveDate] = TxnEff &amp;&amp; 'DEP factcoveragepremium'[transactionNumber] &gt; TxnNum ) ) ) ) VAR TxnEnd = IF ( ISBLANK ( NextTxnEff ), PolExp, NextTxnEff ) VAR EffectiveDays = SWITCH ( TRUE (), TxnType = ""Cancellation"", 0, TxnEff &lt; TxnDate &amp;&amp; TxnEnd &lt;= TxnDate &amp;&amp; TxnDate &gt;= StartDate &amp;&amp; TxnDate &lt;= EndDate, DATEDIFF ( TxnEff, TxnEnd, DAY ), TxnEff &lt; TxnDate &amp;&amp; TxnEnd &gt; TxnDate &amp;&amp; TxnDate &gt;= StartDate &amp;&amp; TxnDate &lt;= EndDate, DATEDIFF ( TxnEff, EndDate, DAY ), TxnEff &gt;= TxnDate &amp;&amp; TxnEnd &gt;= EndDate &amp;&amp; TxnEff &lt;= StartDate, DATEDIFF ( StartDate, EndDate, DAY ), TxnEff &gt;= TxnDate &amp;&amp; TxnEnd &lt; EndDate &amp;&amp; TxnEff &lt;= StartDate, DATEDIFF ( StartDate, TxnEnd, DAY ), TxnEff &gt;= TxnDate &amp;&amp; TxnEnd &gt;= EndDate &amp;&amp; TxnEff &gt; StartDate, DATEDIFF ( TxnEff, EndDate, DAY ), TxnEff &gt;= TxnDate &amp;&amp; TxnEnd &lt; EndDate &amp;&amp; TxnEff &gt; StartDate, DATEDIFF ( TxnEff, TxnEnd, DAY ), 0 ) RETURN IF ( PolStatus = ""Policy Cancelled"" || EffectiveDays &lt; 0, 0, EffectiveDays * ThisPPD ) ), TREATAS ( GrainPolicies, 'DEP factcoveragepremium'[policyNumber] ) ), 0 )," &amp; vbCrLf &amp;
+"" &amp; vbCrLf &amp;
+"    ""UnearnedPremiums""," &amp; vbCrLf &amp;
+"        VAR GrainPolicies2 = CALCULATETABLE ( VALUES ( 'DEP factpolicytransaction'[policyNumber] )," &amp; vbCrLf &amp;
+"                'DEP factpolicytransaction'[recordSource] = ""versions""," &amp; vbCrLf &amp;
+"                'DEP factpolicytransaction'[transactionStatus] = ""Committed""," &amp; vbCrLf &amp;
+"                'DEP factpolicytransaction'[transactionDate] &gt;= StartDate," &amp; vbCrLf &amp;
+"                'DEP factpolicytransaction'[transactionDate] &lt;= EndDate," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimpolicy[clientCode] ),           ParamCompany     = ""All"" || ParamCompany     = """" || golddimpolicy[clientCode]           = ParamCompany )," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimstate[stateCode] ),            ParamState       = ""All"" || ParamState       = """" || golddimstate[stateCode]            = ParamState )," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimpolicy[lobDesc] ),             ParamLOB         = ""All"" || ParamLOB         = """" || golddimpolicy[lobDesc]             = ParamLOB )," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimunderwriter[underwriterName] ), ParamUnderwriter = ""All"" || ParamUnderwriter = """" || golddimunderwriter[underwriterName] = ParamUnderwriter )," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimcarrier[carrierCode] ),        ParamCarrier     = ""All"" || ParamCarrier     = """" || golddimcarrier[carrierCode]        = ParamCarrier )," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimagency[agencyName] ),          ParamAgency      = ""All"" || ParamAgency      = """" || golddimagency[agencyName]          = ParamAgency )" &amp; vbCrLf &amp;
+"        )" &amp; vbCrLf &amp;
+"        RETURN COALESCE ( CALCULATE ( SUMX ( FILTER ( 'DEP factcoveragepremium', 'DEP factcoveragepremium'[recordSource] = ""versions"" &amp;&amp; NOT ISBLANK ( 'DEP factcoveragepremium'[transactionEffectiveDate] ) &amp;&amp; 'DEP factcoveragepremium'[transactionEffectiveDate] &lt;= EndDate ), VAR CurrentPolicy2 = 'DEP factcoveragepremium'[policyNumber] VAR CurrentCov2 = 'DEP factcoveragepremium'[coverageName] VAR TxnEff2 = 'DEP factcoveragepremium'[transactionEffectiveDate] VAR TxnNum2 = 'DEP factcoveragepremium'[transactionNumber] VAR PolStatus2 = 'DEP factcoveragepremium'[policyStatus] VAR ThisPPD2 = IF ( ISBLANK ( 'DEP factcoveragepremium'[premiumPerDay] ), 0, 'DEP factcoveragepremium'[premiumPerDay] ) VAR PolExp2 = 'DEP factcoveragepremium'[policyExpiryDate] VAR MaxRank = CALCULATE ( MAXX ( FILTER ( ALL ( 'DEP factcoveragepremium' ), 'DEP factcoveragepremium'[recordSource] = ""versions"" &amp;&amp; 'DEP factcoveragepremium'[policyNumber] = CurrentPolicy2 &amp;&amp; 'DEP factcoveragepremium'[coverageName] = CurrentCov2 &amp;&amp; 'DEP factcoveragepremium'[transactionEffectiveDate] &lt;= EndDate ), 'DEP factcoveragepremium'[transactionNumber] * 1000000 + DATEDIFF ( DATE ( 2000, 1, 1 ), 'DEP factcoveragepremium'[transactionEffectiveDate], DAY ) ) ) VAR ThisRank = TxnNum2 * 1000000 + DATEDIFF ( DATE ( 2000, 1, 1 ), TxnEff2, DAY ) VAR UnearnedDays = DATEDIFF ( EndDate, PolExp2, DAY ) RETURN IF ( ThisRank &lt;&gt; MaxRank || PolStatus2 = ""Policy Cancelled"" || UnearnedDays &lt; 0, 0, UnearnedDays * ThisPPD2 ) ), TREATAS ( GrainPolicies2, 'DEP factcoveragepremium'[policyNumber] ) ), 0 )," &amp; vbCrLf &amp;
+"" &amp; vbCrLf &amp;
+"    ""FeesAndMisc""," &amp; vbCrLf &amp;
+"        VAR GrainPolicies3 = CALCULATETABLE ( VALUES ( 'DEP factpolicytransaction'[policyNumber] )," &amp; vbCrLf &amp;
+"                'DEP factpolicytransaction'[recordSource] = ""versions""," &amp; vbCrLf &amp;
+"                'DEP factpolicytransaction'[transactionStatus] = ""Committed""," &amp; vbCrLf &amp;
+"                'DEP factpolicytransaction'[transactionDate] &gt;= StartDate," &amp; vbCrLf &amp;
+"                'DEP factpolicytransaction'[transactionDate] &lt;= EndDate," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimpolicy[clientCode] ),           ParamCompany     = ""All"" || ParamCompany     = """" || golddimpolicy[clientCode]           = ParamCompany )," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimstate[stateCode] ),            ParamState       = ""All"" || ParamState       = """" || golddimstate[stateCode]            = ParamState )," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimpolicy[lobDesc] ),             ParamLOB         = ""All"" || ParamLOB         = """" || golddimpolicy[lobDesc]             = ParamLOB )," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimunderwriter[underwriterName] ), ParamUnderwriter = ""All"" || ParamUnderwriter = """" || golddimunderwriter[underwriterName] = ParamUnderwriter )," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimcarrier[carrierCode] ),        ParamCarrier     = ""All"" || ParamCarrier     = """" || golddimcarrier[carrierCode]        = ParamCarrier )," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimagency[agencyName] ),          ParamAgency      = ""All"" || ParamAgency      = """" || golddimagency[agencyName]          = ParamAgency )" &amp; vbCrLf &amp;
+"        )" &amp; vbCrLf &amp;
+"        RETURN COALESCE ( CALCULATE ( SUM ( 'DEP factpolicycharges'[amount] ), TREATAS ( GrainPolicies3, 'DEP factpolicycharges'[policyNumber] ) ), 0 )," &amp; vbCrLf &amp;
+"" &amp; vbCrLf &amp;
+"    ""LossesIncurred""," &amp; vbCrLf &amp;
+"        VAR GrainPolicies4 = CALCULATETABLE ( VALUES ( 'DEP factpolicytransaction'[policyNumber] )," &amp; vbCrLf &amp;
+"                'DEP factpolicytransaction'[recordSource] = ""versions""," &amp; vbCrLf &amp;
+"                'DEP factpolicytransaction'[transactionStatus] = ""Committed""," &amp; vbCrLf &amp;
+"                'DEP factpolicytransaction'[transactionDate] &gt;= StartDate," &amp; vbCrLf &amp;
+"                'DEP factpolicytransaction'[transactionDate] &lt;= EndDate," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimpolicy[clientCode] ),           ParamCompany     = ""All"" || ParamCompany     = """" || golddimpolicy[clientCode]           = ParamCompany )," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimstate[stateCode] ),            ParamState       = ""All"" || ParamState       = """" || golddimstate[stateCode]            = ParamState )," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimpolicy[lobDesc] ),             ParamLOB         = ""All"" || ParamLOB         = """" || golddimpolicy[lobDesc]             = ParamLOB )," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimunderwriter[underwriterName] ), ParamUnderwriter = ""All"" || ParamUnderwriter = """" || golddimunderwriter[underwriterName] = ParamUnderwriter )," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimcarrier[carrierCode] ),        ParamCarrier     = ""All"" || ParamCarrier     = """" || golddimcarrier[carrierCode]        = ParamCarrier )," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimagency[agencyName] ),          ParamAgency      = ""All"" || ParamAgency      = """" || golddimagency[agencyName]          = ParamAgency )" &amp; vbCrLf &amp;
+"        )" &amp; vbCrLf &amp;
+"        RETURN COALESCE ( CALCULATE ( SUM ( 'DEC factclaimfinancial'[amount] ), 'DEC factclaimfinancial'[finCategory] IN { ""R"", ""C"", ""%"", ""V"" }, TREATAS ( GrainPolicies4, 'DEC factclaimfinancial'[policyNumber] ) ), 0 )," &amp; vbCrLf &amp;
+"" &amp; vbCrLf &amp;
+"    ""AvgCommissionPct""," &amp; vbCrLf &amp;
+"        VAR GrainPolicies5 = CALCULATETABLE ( VALUES ( 'DEP factpolicytransaction'[policyNumber] )," &amp; vbCrLf &amp;
+"                'DEP factpolicytransaction'[recordSource] = ""versions""," &amp; vbCrLf &amp;
+"                'DEP factpolicytransaction'[transactionStatus] = ""Committed""," &amp; vbCrLf &amp;
+"                'DEP factpolicytransaction'[transactionDate] &gt;= StartDate," &amp; vbCrLf &amp;
+"                'DEP factpolicytransaction'[transactionDate] &lt;= EndDate," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimpolicy[clientCode] ),           ParamCompany     = ""All"" || ParamCompany     = """" || golddimpolicy[clientCode]           = ParamCompany )," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimstate[stateCode] ),            ParamState       = ""All"" || ParamState       = """" || golddimstate[stateCode]            = ParamState )," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimpolicy[lobDesc] ),             ParamLOB         = ""All"" || ParamLOB         = """" || golddimpolicy[lobDesc]             = ParamLOB )," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimunderwriter[underwriterName] ), ParamUnderwriter = ""All"" || ParamUnderwriter = """" || golddimunderwriter[underwriterName] = ParamUnderwriter )," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimcarrier[carrierCode] ),        ParamCarrier     = ""All"" || ParamCarrier     = """" || golddimcarrier[carrierCode]        = ParamCarrier )," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimagency[agencyName] ),          ParamAgency      = ""All"" || ParamAgency      = """" || golddimagency[agencyName]          = ParamAgency )" &amp; vbCrLf &amp;
+"        )" &amp; vbCrLf &amp;
+"        RETURN COALESCE ( CALCULATE ( AVERAGE ( 'DDM factcommissionactivity'[commissionNbPercent] ), REMOVEFILTERS ( 'DDM factcommissionactivity' ), TREATAS ( GrainPolicies5, 'DDM factcommissionactivity'[policyNumber] ) ), 0 )," &amp; vbCrLf &amp;
+"" &amp; vbCrLf &amp;
+"    ""SubAgentCommission""," &amp; vbCrLf &amp;
+"        VAR GrainPolicies6 = CALCULATETABLE ( VALUES ( 'DEP factpolicytransaction'[policyNumber] )," &amp; vbCrLf &amp;
+"                'DEP factpolicytransaction'[recordSource] = ""versions""," &amp; vbCrLf &amp;
+"                'DEP factpolicytransaction'[transactionStatus] = ""Committed""," &amp; vbCrLf &amp;
+"                'DEP factpolicytransaction'[transactionDate] &gt;= StartDate," &amp; vbCrLf &amp;
+"                'DEP factpolicytransaction'[transactionDate] &lt;= EndDate," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimpolicy[clientCode] ),           ParamCompany     = ""All"" || ParamCompany     = """" || golddimpolicy[clientCode]           = ParamCompany )," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimstate[stateCode] ),            ParamState       = ""All"" || ParamState       = """" || golddimstate[stateCode]            = ParamState )," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimpolicy[lobDesc] ),             ParamLOB         = ""All"" || ParamLOB         = """" || golddimpolicy[lobDesc]             = ParamLOB )," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimunderwriter[underwriterName] ), ParamUnderwriter = ""All"" || ParamUnderwriter = """" || golddimunderwriter[underwriterName] = ParamUnderwriter )," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimcarrier[carrierCode] ),        ParamCarrier     = ""All"" || ParamCarrier     = """" || golddimcarrier[carrierCode]        = ParamCarrier )," &amp; vbCrLf &amp;
+"                FILTER ( ALL ( golddimagency[agencyName] ),          ParamAgency      = ""All"" || ParamAgency      = """" || golddimagency[agencyName]          = ParamAgency )" &amp; vbCrLf &amp;
+"        )" &amp; vbCrLf &amp;
+"        RETURN COALESCE ( CALCULATE ( SUM ( 'DDM factcommissionactivity'[amount] ), REMOVEFILTERS ( 'DDM factcommissionactivity' ), TREATAS ( GrainPolicies6, 'DDM factcommissionactivity'[policyNumber] ) ), 0 )" &amp; vbCrLf &amp;
+")" &amp; vbCrLf &amp;
+"ORDER BY golddimpolicy[clientCode] ASC, golddimstate[stateCode] ASC"</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="clientCode">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>golddimpolicy[clientCode]</DataField>
+        </Field>
+        <Field Name="stateCode">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>golddimstate[stateCode]</DataField>
+        </Field>
+        <Field Name="NewBusinessCount">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>[NewBusinessCount]</DataField>
+        </Field>
+        <Field Name="RenewalCount">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>[RenewalCount]</DataField>
+        </Field>
+        <Field Name="CancelledCount">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>[CancelledCount]</DataField>
+        </Field>
+        <Field Name="GrossPremiumWritten">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>[GrossPremiumWritten]</DataField>
+        </Field>
+        <Field Name="PremiumsCancelled">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>[PremiumsCancelled]</DataField>
+        </Field>
+        <Field Name="FeesAndMisc">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>[FeesAndMisc]</DataField>
+        </Field>
+        <Field Name="NetPremiumWritten">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>[NetPremiumWritten]</DataField>
+        </Field>
+        <Field Name="EarnedPremiums">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>[EarnedPremiums]</DataField>
+        </Field>
+        <Field Name="UnearnedPremiums">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>[UnearnedPremiums]</DataField>
+        </Field>
+        <Field Name="LossesIncurred">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>[LossesIncurred]</DataField>
+        </Field>
+        <Field Name="AvgCommissionPct">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>[AvgCommissionPct]</DataField>
+        </Field>
+        <Field Name="SubAgentCommission">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>[SubAgentCommission]</DataField>
+        </Field>
+        <Field Name="InforcePremium">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>[termPremium]</DataField>
+        </Field>
+        <Field Name="TotalInforcePolicies">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>[TotalInforcePolicies]</DataField>
+        </Field>
+        <Field Name="AvgTermMonths">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>[AvgTermMonths]</DataField>
+        </Field>
+      </Fields>
+      <Filters>
+        <Filter>
+          <FilterExpression>=Fields!clientCode.Value</FilterExpression>
+          <Operator>Equal</Operator>
+          <FilterValues>
+            <FilterValue>=IIF(Parameters!Company.Value="All",Fields!clientCode.Value,Parameters!Company.Value)</FilterValue>
+          </FilterValues>
+        </Filter>
+        <Filter>
+          <FilterExpression>=Fields!stateCode.Value</FilterExpression>
+          <Operator>Equal</Operator>
+          <FilterValues>
+            <FilterValue>=IIF(Parameters!State.Value="All",Fields!stateCode.Value,Parameters!State.Value)</FilterValue>
+          </FilterValues>
+        </Filter>
+      </Filters>
+    </DataSet>
+    <DataSet Name="DSCompany">
+      <Query>
+        <DataSourceName>PROD_CFP_Workspace_Cogitate_Dashboard</DataSourceName>
+        <CommandText>EVALUATE UNION(ROW("clientCode","All"),CALCULATETABLE(SUMMARIZECOLUMNS(golddimpolicy[clientCode]),NOT ISBLANK(golddimpolicy[clientCode]))) ORDER BY [clientCode] ASC</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="clientCode">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>[clientCode]</DataField>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="DSLOB">
+      <Query>
+        <DataSourceName>PROD_CFP_Workspace_Cogitate_Dashboard</DataSourceName>
+        <CommandText>EVALUATE UNION(ROW("lobDesc","All"),CALCULATETABLE(SUMMARIZECOLUMNS(golddimpolicy[lobDesc]),NOT ISBLANK(golddimpolicy[lobDesc]))) ORDER BY [lobDesc] ASC</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="lobDesc">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>[lobDesc]</DataField>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="DSState">
+      <Query>
+        <DataSourceName>PROD_CFP_Workspace_Cogitate_Dashboard</DataSourceName>
+        <CommandText>EVALUATE UNION(ROW("stateCode","All"),CALCULATETABLE(SUMMARIZECOLUMNS(golddimstate[stateCode]),NOT ISBLANK(golddimstate[stateCode]))) ORDER BY [stateCode] ASC</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="stateCode">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>[stateCode]</DataField>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="DSUnderwriter">
+      <Query>
+        <DataSourceName>PROD_CFP_Workspace_Cogitate_Dashboard</DataSourceName>
+        <CommandText>EVALUATE
+UNION (
+    ROW ( "underwriterName", "All" ),
+    CALCULATETABLE (
+        SUMMARIZECOLUMNS ( golddimunderwriter[underwriterName] ),
+        NOT ISBLANK ( golddimunderwriter[underwriterName] )
+    )
+)
+ORDER BY [underwriterName] ASC</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="underwriterName">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>[underwriterName]</DataField>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="DSCarrier">
+      <Query>
+        <DataSourceName>PROD_CFP_Workspace_Cogitate_Dashboard</DataSourceName>
+        <CommandText>EVALUATE
+UNION (
+    ROW ( "carrierCode", "All" ),
+    CALCULATETABLE (
+        SUMMARIZECOLUMNS ( golddimcarrier[carrierCode] ),
+        NOT ISBLANK ( golddimcarrier[carrierCode] )
+    )
+)
+ORDER BY [carrierCode] ASC</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="carrierCode">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>[carrierCode]</DataField>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="DSAgency">
+      <Query>
+        <DataSourceName>PROD_CFP_Workspace_Cogitate_Dashboard</DataSourceName>
+        <CommandText>EVALUATE
+UNION (
+    ROW ( "agencyName", "All" ),
+    CALCULATETABLE (
+        SUMMARIZECOLUMNS ( golddimagency[agencyName] ),
+        NOT ISBLANK ( golddimagency[agencyName] )
+    )
+)
+ORDER BY [agencyName] ASC</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="agencyName">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>[agencyName]</DataField>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Textbox Name="txtTitle">
+            <CanGrow>true</CanGrow>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>Agent Experience Report </Value>
+                    <Style>
+                      <FontFamily>Segoe UI</FontFamily>
+                      <FontSize>18pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                      <Color>#1f4e79</Color>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <Top>0.01445in</Top>
+            <Height>0.38in</Height>
+            <Width>12in</Width>
+            <Style>
+              <TextAlign>Left</TextAlign>
+              <VerticalAlign>Middle</VerticalAlign>
+            </Style>
+          </Textbox>
+          <Textbox Name="txtRunDate">
+            <CanGrow>true</CanGrow>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>="Run Date: " &amp; Format(Now(),"MM/dd/yyyy hh:mm tt")</Value>
+                    <Style>
+                      <FontFamily>Segoe UI</FontFamily>
+                      <FontSize>8pt</FontSize>
+                      <Color>#888888</Color>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <Top>0.50056in</Top>
+            <Left>14.175in</Left>
+            <Height>0.25in</Height>
+            <Width>3.925in</Width>
+            <ZIndex>1</ZIndex>
+            <Style>
+              <TextAlign>Right</TextAlign>
+              <VerticalAlign>Middle</VerticalAlign>
+            </Style>
+          </Textbox>
+          <Textbox Name="txtFilter">
+            <CanGrow>true</CanGrow>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>="Company: " &amp; IIF(IsNothing(Parameters!Company.Value) OR Parameters!Company.Value = "", "All", Parameters!Company.Value) &amp;
+"  |  Carrier: " &amp; IIF(IsNothing(Parameters!Carrier.Value) OR Parameters!Carrier.Value = "", "All", Parameters!Carrier.Value) &amp;
+"  |  State: " &amp; IIF(IsNothing(Parameters!State.Value) OR Parameters!State.Value = "", "All", Parameters!State.Value) &amp;
+"  |  LOB: " &amp; IIF(IsNothing(Parameters!LOB.Value) OR Parameters!LOB.Value = "", "All", Parameters!LOB.Value) &amp;
+"  |  Agency: " &amp; IIF(IsNothing(Parameters!Agency.Value) OR Parameters!Agency.Value = "", "All", Parameters!Agency.Value) &amp;
+"  |  Underwriter: " &amp; IIF(IsNothing(Parameters!Underwriter.Value) OR Parameters!Underwriter.Value = "", "All", Parameters!Underwriter.Value) &amp;
+"  |  From: " &amp; Format(Parameters!StartDate.Value,"MM/dd/yyyy") &amp;
+"  To: " &amp; Format(Parameters!EndDate.Value,"MM/dd/yyyy")</Value>
+                    <Style>
+                      <FontFamily>Segoe UI</FontFamily>
+                      <FontSize>8pt</FontSize>
+                      <Color>#444444</Color>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <Top>0.43445in</Top>
+            <Height>0.22in</Height>
+            <Width>11.66667in</Width>
+            <ZIndex>2</ZIndex>
+            <Style>
+              <TextAlign>Left</TextAlign>
+              <VerticalAlign>Middle</VerticalAlign>
+            </Style>
+          </Textbox>
+          <Textbox Name="txtSec">
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>Agent Experience Report</Value>
+                    <Style>
+                      <FontFamily>Segoe UI</FontFamily>
+                      <FontSize>11pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                      <Color>#ffffff</Color>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <Top>0.76445in</Top>
+            <Height>0.3in</Height>
+            <Width>18.1in</Width>
+            <ZIndex>3</ZIndex>
+            <Style>
+              <BackgroundColor>#1f4e79</BackgroundColor>
+              <VerticalAlign>Middle</VerticalAlign>
+              <PaddingLeft>6pt</PaddingLeft>
+            </Style>
+          </Textbox>
+          <Tablix Name="TabCCS">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>0.8in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.8in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.8in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.4in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.3in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.1in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.4in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.2in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.2in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.2in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.8in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.8in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.2in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.2in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.9in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.1in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.9in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.35in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="hCCS_3">
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>New Business
+Count</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>7.5pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#ffffff</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#ffffff</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#2e75b6</BackgroundColor>
+                            <TextAlign>Center</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>4pt</PaddingLeft>
+                            <PaddingRight>4pt</PaddingRight>
+                            <PaddingTop>3pt</PaddingTop>
+                            <PaddingBottom>3pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="hCCS_4">
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Renewal
+Count</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>7.5pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#ffffff</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#ffffff</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#2e75b6</BackgroundColor>
+                            <TextAlign>Center</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>4pt</PaddingLeft>
+                            <PaddingRight>4pt</PaddingRight>
+                            <PaddingTop>3pt</PaddingTop>
+                            <PaddingBottom>3pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="hCCS_5">
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Cancelled
+Count</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>7.5pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#ffffff</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#ffffff</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#2e75b6</BackgroundColor>
+                            <TextAlign>Center</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>4pt</PaddingLeft>
+                            <PaddingRight>4pt</PaddingRight>
+                            <PaddingTop>3pt</PaddingTop>
+                            <PaddingBottom>3pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="hCCS_6">
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Gross Premium
+Written</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>7.5pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#ffffff</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#ffffff</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#2e75b6</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>4pt</PaddingLeft>
+                            <PaddingRight>4pt</PaddingRight>
+                            <PaddingTop>3pt</PaddingTop>
+                            <PaddingBottom>3pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="hCCS_7">
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Premiums
+Cancelled</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>7.5pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#ffffff</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#ffffff</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#2e75b6</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>4pt</PaddingLeft>
+                            <PaddingRight>4pt</PaddingRight>
+                            <PaddingTop>3pt</PaddingTop>
+                            <PaddingBottom>3pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="hCCS_8">
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Fees, Taxes
+&amp; Misc</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>7.5pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#ffffff</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#ffffff</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#2e75b6</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>4pt</PaddingLeft>
+                            <PaddingRight>4pt</PaddingRight>
+                            <PaddingTop>3pt</PaddingTop>
+                            <PaddingBottom>3pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="hCCS_9">
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Net Premium
+Written</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>7.5pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#ffffff</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#ffffff</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#2e75b6</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>4pt</PaddingLeft>
+                            <PaddingRight>4pt</PaddingRight>
+                            <PaddingTop>3pt</PaddingTop>
+                            <PaddingBottom>3pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="hCCS_10">
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Unearned
+Premiums</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>7.5pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#ffffff</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#ffffff</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#2e75b6</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>4pt</PaddingLeft>
+                            <PaddingRight>4pt</PaddingRight>
+                            <PaddingTop>3pt</PaddingTop>
+                            <PaddingBottom>3pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="hCCS_11">
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Earned
+Premiums</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>7.5pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#ffffff</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#ffffff</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#2e75b6</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>4pt</PaddingLeft>
+                            <PaddingRight>4pt</PaddingRight>
+                            <PaddingTop>3pt</PaddingTop>
+                            <PaddingBottom>3pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="hCCS_12">
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Losses &amp;
+Expenses</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>7.5pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#ffffff</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#ffffff</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#2e75b6</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>4pt</PaddingLeft>
+                            <PaddingRight>4pt</PaddingRight>
+                            <PaddingTop>3pt</PaddingTop>
+                            <PaddingBottom>3pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="hCCS_13">
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Loss
+Ratio</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>7.5pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#ffffff</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#ffffff</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#2e75b6</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>4pt</PaddingLeft>
+                            <PaddingRight>4pt</PaddingRight>
+                            <PaddingTop>3pt</PaddingTop>
+                            <PaddingBottom>3pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="hCCS_14">
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Avg Comm
+%</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>7.5pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#ffffff</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#ffffff</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#2e75b6</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>4pt</PaddingLeft>
+                            <PaddingRight>4pt</PaddingRight>
+                            <PaddingTop>3pt</PaddingTop>
+                            <PaddingBottom>3pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="hCCS_15">
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Sub-Agent
+Commission</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>7.5pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#ffffff</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#ffffff</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#2e75b6</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>4pt</PaddingLeft>
+                            <PaddingRight>4pt</PaddingRight>
+                            <PaddingTop>3pt</PaddingTop>
+                            <PaddingBottom>3pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="hCCS_16">
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Inforce
+Premium</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>7.5pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#ffffff</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#ffffff</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#2e75b6</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>4pt</PaddingLeft>
+                            <PaddingRight>4pt</PaddingRight>
+                            <PaddingTop>3pt</PaddingTop>
+                            <PaddingBottom>3pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="hCCS_17">
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Total Inforce
+Policies</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>7.5pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#ffffff</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#ffffff</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#2e75b6</BackgroundColor>
+                            <TextAlign>Center</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>4pt</PaddingLeft>
+                            <PaddingRight>4pt</PaddingRight>
+                            <PaddingTop>3pt</PaddingTop>
+                            <PaddingBottom>3pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="hCCS_18">
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Avg Inforce
+Premium</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>7.5pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#ffffff</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#ffffff</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#2e75b6</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>4pt</PaddingLeft>
+                            <PaddingRight>4pt</PaddingRight>
+                            <PaddingTop>3pt</PaddingTop>
+                            <PaddingBottom>3pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="hCCS_19">
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Avg Term
+(Months)</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>7.5pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#ffffff</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#ffffff</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#2e75b6</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>4pt</PaddingLeft>
+                            <PaddingRight>4pt</PaddingRight>
+                            <PaddingTop>3pt</PaddingTop>
+                            <PaddingBottom>3pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.22in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="dCCS_3">
+                          <CanGrow>true</CanGrow>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=IIF(IsNothing(Fields!NewBusinessCount.Value),0,Fields!NewBusinessCount.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>7.5pt</FontSize>
+                                    <Color>#1f4e79</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#bfbfbf</Color>
+                              <Style>Solid</Style>
+                              <Width>0.5pt</Width>
+                            </Border>
+                            <BackgroundColor>#d6e4f0</BackgroundColor>
+                            <TextAlign>Center</TextAlign>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>3pt</PaddingLeft>
+                            <PaddingRight>3pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="dCCS_4">
+                          <CanGrow>true</CanGrow>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=IIF(IsNothing(Fields!RenewalCount.Value),0,Fields!RenewalCount.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>7.5pt</FontSize>
+                                    <Color>#1f4e79</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#bfbfbf</Color>
+                              <Style>Solid</Style>
+                              <Width>0.5pt</Width>
+                            </Border>
+                            <BackgroundColor>#d6e4f0</BackgroundColor>
+                            <TextAlign>Center</TextAlign>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>3pt</PaddingLeft>
+                            <PaddingRight>3pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="dCCS_5">
+                          <CanGrow>true</CanGrow>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=IIF(IsNothing(Fields!CancelledCount.Value),0,Fields!CancelledCount.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>7.5pt</FontSize>
+                                    <Color>#1f4e79</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#bfbfbf</Color>
+                              <Style>Solid</Style>
+                              <Width>0.5pt</Width>
+                            </Border>
+                            <BackgroundColor>#d6e4f0</BackgroundColor>
+                            <TextAlign>Center</TextAlign>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>3pt</PaddingLeft>
+                            <PaddingRight>3pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="dCCS_6">
+                          <CanGrow>true</CanGrow>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Format(IIF(IsNothing(Fields!GrossPremiumWritten.Value),0,Fields!GrossPremiumWritten.Value),"$#,##0.00")</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>7.5pt</FontSize>
+                                    <Color>#1f4e79</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#bfbfbf</Color>
+                              <Style>Solid</Style>
+                              <Width>0.5pt</Width>
+                            </Border>
+                            <BackgroundColor>#d6e4f0</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>3pt</PaddingLeft>
+                            <PaddingRight>3pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="dCCS_7">
+                          <CanGrow>true</CanGrow>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Format(IIF(IsNothing(Fields!PremiumsCancelled.Value),0,Fields!PremiumsCancelled.Value),"$#,##0.00")</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>7.5pt</FontSize>
+                                    <Color>#1f4e79</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#bfbfbf</Color>
+                              <Style>Solid</Style>
+                              <Width>0.5pt</Width>
+                            </Border>
+                            <BackgroundColor>#d6e4f0</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>3pt</PaddingLeft>
+                            <PaddingRight>3pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="dCCS_8">
+                          <CanGrow>true</CanGrow>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Format(IIF(IsNothing(Fields!FeesAndMisc.Value),0,Fields!FeesAndMisc.Value),"$#,##0.00")</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>7.5pt</FontSize>
+                                    <Color>#1f4e79</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#bfbfbf</Color>
+                              <Style>Solid</Style>
+                              <Width>0.5pt</Width>
+                            </Border>
+                            <BackgroundColor>#d6e4f0</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>3pt</PaddingLeft>
+                            <PaddingRight>3pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="dCCS_9">
+                          <CanGrow>true</CanGrow>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Format(IIF(IsNothing(Fields!NetPremiumWritten.Value),0,Fields!NetPremiumWritten.Value),"$#,##0.00")</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>7.5pt</FontSize>
+                                    <Color>#1f4e79</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#bfbfbf</Color>
+                              <Style>Solid</Style>
+                              <Width>0.5pt</Width>
+                            </Border>
+                            <BackgroundColor>#d6e4f0</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>3pt</PaddingLeft>
+                            <PaddingRight>3pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="dCCS_10">
+                          <CanGrow>true</CanGrow>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Format(IIF(IsNothing(Fields!UnearnedPremiums.Value),0,Fields!UnearnedPremiums.Value),"$#,##0.00")</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>7.5pt</FontSize>
+                                    <Color>#1f4e79</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#bfbfbf</Color>
+                              <Style>Solid</Style>
+                              <Width>0.5pt</Width>
+                            </Border>
+                            <BackgroundColor>#d6e4f0</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>3pt</PaddingLeft>
+                            <PaddingRight>3pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="dCCS_11">
+                          <CanGrow>true</CanGrow>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Format(IIF(IsNothing(Fields!EarnedPremiums.Value),0,Fields!EarnedPremiums.Value),"$#,##0.00")</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>7.5pt</FontSize>
+                                    <Color>#1f4e79</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#bfbfbf</Color>
+                              <Style>Solid</Style>
+                              <Width>0.5pt</Width>
+                            </Border>
+                            <BackgroundColor>#d6e4f0</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>3pt</PaddingLeft>
+                            <PaddingRight>3pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="dCCS_12">
+                          <CanGrow>true</CanGrow>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Format(IIF(IsNothing(Fields!LossesIncurred.Value),0,Fields!LossesIncurred.Value),"$#,##0.00")</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>7.5pt</FontSize>
+                                    <Color>#1f4e79</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#bfbfbf</Color>
+                              <Style>Solid</Style>
+                              <Width>0.5pt</Width>
+                            </Border>
+                            <BackgroundColor>#d6e4f0</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>3pt</PaddingLeft>
+                            <PaddingRight>3pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="dCCS_13">
+                          <CanGrow>true</CanGrow>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=IIF(IsNothing(Fields!EarnedPremiums.Value) OR Fields!EarnedPremiums.Value=0,"N/A",Format(Fields!LossesIncurred.Value/Fields!EarnedPremiums.Value,"P1"))</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>7.5pt</FontSize>
+                                    <Color>#1f4e79</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#bfbfbf</Color>
+                              <Style>Solid</Style>
+                              <Width>0.5pt</Width>
+                            </Border>
+                            <BackgroundColor>#d6e4f0</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>3pt</PaddingLeft>
+                            <PaddingRight>3pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="dCCS_14">
+                          <CanGrow>true</CanGrow>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=IIF(IsNothing(Fields!AvgCommissionPct.Value),"",Format(Fields!AvgCommissionPct.Value,"0.0\%"))</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>7.5pt</FontSize>
+                                    <Color>#1f4e79</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#bfbfbf</Color>
+                              <Style>Solid</Style>
+                              <Width>0.5pt</Width>
+                            </Border>
+                            <BackgroundColor>#d6e4f0</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>3pt</PaddingLeft>
+                            <PaddingRight>3pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="dCCS_15">
+                          <CanGrow>true</CanGrow>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Format(IIF(IsNothing(Fields!SubAgentCommission.Value),0,Fields!SubAgentCommission.Value),"$#,##0.00")</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>7.5pt</FontSize>
+                                    <Color>#1f4e79</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#bfbfbf</Color>
+                              <Style>Solid</Style>
+                              <Width>0.5pt</Width>
+                            </Border>
+                            <BackgroundColor>#d6e4f0</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>3pt</PaddingLeft>
+                            <PaddingRight>3pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="dCCS_16">
+                          <CanGrow>true</CanGrow>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Format(IIF(IsNothing(Fields!InforcePremium.Value),0,Fields!InforcePremium.Value),"$#,##0.00")</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>7.5pt</FontSize>
+                                    <Color>#1f4e79</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#bfbfbf</Color>
+                              <Style>Solid</Style>
+                              <Width>0.5pt</Width>
+                            </Border>
+                            <BackgroundColor>#d6e4f0</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>3pt</PaddingLeft>
+                            <PaddingRight>3pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="dCCS_17">
+                          <CanGrow>true</CanGrow>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=IIF(IsNothing(Fields!TotalInforcePolicies.Value),0,Fields!TotalInforcePolicies.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>7.5pt</FontSize>
+                                    <Color>#1f4e79</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#bfbfbf</Color>
+                              <Style>Solid</Style>
+                              <Width>0.5pt</Width>
+                            </Border>
+                            <BackgroundColor>#d6e4f0</BackgroundColor>
+                            <TextAlign>Center</TextAlign>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>3pt</PaddingLeft>
+                            <PaddingRight>3pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="dCCS_18">
+                          <CanGrow>true</CanGrow>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=IIF(IsNothing(Fields!TotalInforcePolicies.Value) OR Fields!TotalInforcePolicies.Value=0,"N/A",Format(Fields!InforcePremium.Value/Fields!TotalInforcePolicies.Value,"$#,##0.00"))</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>7.5pt</FontSize>
+                                    <Color>#1f4e79</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#bfbfbf</Color>
+                              <Style>Solid</Style>
+                              <Width>0.5pt</Width>
+                            </Border>
+                            <BackgroundColor>#d6e4f0</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>3pt</PaddingLeft>
+                            <PaddingRight>3pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="dCCS_19">
+                          <CanGrow>true</CanGrow>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=IIF(IsNothing(Fields!AvgTermMonths.Value),"",Format(Fields!AvgTermMonths.Value,"0.0"))</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>7.5pt</FontSize>
+                                    <Color>#1f4e79</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#bfbfbf</Color>
+                              <Style>Solid</Style>
+                              <Width>0.5pt</Width>
+                            </Border>
+                            <BackgroundColor>#d6e4f0</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>3pt</PaddingLeft>
+                            <PaddingRight>3pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <KeepWithGroup>After</KeepWithGroup>
+                </TablixMember>
+                <TablixMember>
+                  <Group Name="TabCCSGroup" />
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <DataSetName>DSCompanyCoverageState</DataSetName>
+            <Top>1.11445in</Top>
+            <Height>0.57in</Height>
+            <Width>18.1in</Width>
+            <ZIndex>4</ZIndex>
+            <Style />
+          </Tablix>
+          <Image Name="Image1">
+            <Source>Embedded</Source>
+            <Value>Cogitatelogo</Value>
+            <Sizing>FitProportional</Sizing>
+            <Top>0.02778in</Top>
+            <Left>14.175in</Left>
+            <Height>0.45889in</Height>
+            <Width>2.33333in</Width>
+            <ZIndex>5</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Image>
+        </ReportItems>
+        <Height>15.01445in</Height>
+        <Style />
+      </Body>
+      <Width>18.5in</Width>
+      <Page>
+        <PageWidth>21.3in</PageWidth>
+        <LeftMargin>0.25in</LeftMargin>
+        <RightMargin>0.25in</RightMargin>
+        <TopMargin>0.5in</TopMargin>
+        <BottomMargin>0.5in</BottomMargin>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParameters>
+    <ReportParameter Name="StartDate">
+      <DataType>DateTime</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>=DateSerial(Year(Today()),1,1)</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Date From (Reporting Period)</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="EndDate">
+      <DataType>DateTime</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>=Today()</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Date To (Reporting Period)</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="Carrier">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>All</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Carrier</Prompt>
+      <ValidValues>
+        <DataSetReference>
+          <DataSetName>DSCarrier</DataSetName>
+          <ValueField>carrierCode</ValueField>
+          <LabelField>carrierCode</LabelField>
+        </DataSetReference>
+      </ValidValues>
+      <cl:ComponentMetadata>
+        <cl:HideUpdateNotifications>true</cl:HideUpdateNotifications>
+      </cl:ComponentMetadata>
+    </ReportParameter>
+    <ReportParameter Name="LOB">
+      <DataType>String</DataType>
+      <Prompt>Line of Business</Prompt>
+      <cl:ComponentMetadata>
+        <cl:HideUpdateNotifications>true</cl:HideUpdateNotifications>
+      </cl:ComponentMetadata>
+    </ReportParameter>
+    <ReportParameter Name="State">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>All</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>State</Prompt>
+      <ValidValues>
+        <DataSetReference>
+          <DataSetName>DSState</DataSetName>
+          <ValueField>stateCode</ValueField>
+          <LabelField>stateCode</LabelField>
+        </DataSetReference>
+      </ValidValues>
+      <cl:ComponentMetadata>
+        <cl:HideUpdateNotifications>true</cl:HideUpdateNotifications>
+      </cl:ComponentMetadata>
+    </ReportParameter>
+    <ReportParameter Name="Agency">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>All</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Agency</Prompt>
+      <ValidValues>
+        <DataSetReference>
+          <DataSetName>DSAgency</DataSetName>
+          <ValueField>agencyName</ValueField>
+          <LabelField>agencyName</LabelField>
+        </DataSetReference>
+      </ValidValues>
+      <cl:ComponentMetadata>
+        <cl:HideUpdateNotifications>true</cl:HideUpdateNotifications>
+      </cl:ComponentMetadata>
+    </ReportParameter>
+    <ReportParameter Name="Underwriter">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>All</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Underwriter</Prompt>
+      <ValidValues>
+        <DataSetReference>
+          <DataSetName>DSUnderwriter</DataSetName>
+          <ValueField>underwriterName</ValueField>
+          <LabelField>underwriterName</LabelField>
+        </DataSetReference>
+      </ValidValues>
+      <cl:ComponentMetadata>
+        <cl:HideUpdateNotifications>true</cl:HideUpdateNotifications>
+      </cl:ComponentMetadata>
+    </ReportParameter>
+    <ReportParameter Name="Company">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>All</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Company</Prompt>
+      <ValidValues>
+        <DataSetReference>
+          <DataSetName>DSCompany</DataSetName>
+          <ValueField>clientCode</ValueField>
+          <LabelField>clientCode</LabelField>
+        </DataSetReference>
+      </ValidValues>
+      <cl:ComponentMetadata>
+        <cl:HideUpdateNotifications>true</cl:HideUpdateNotifications>
+      </cl:ComponentMetadata>
+    </ReportParameter>
+  </ReportParameters>
+  <ReportParametersLayout>
+    <GridLayoutDefinition>
+      <NumberOfColumns>4</NumberOfColumns>
+      <NumberOfRows>2</NumberOfRows>
+      <CellDefinitions>
+        <CellDefinition>
+          <ColumnIndex>3</ColumnIndex>
+          <RowIndex>1</RowIndex>
+          <ParameterName>Company</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>1</RowIndex>
+          <ParameterName>State</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>3</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>LOB</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>2</ColumnIndex>
+          <RowIndex>1</RowIndex>
+          <ParameterName>Underwriter</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>2</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>Carrier</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>1</ColumnIndex>
+          <RowIndex>1</RowIndex>
+          <ParameterName>Agency</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>StartDate</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>1</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>EndDate</ParameterName>
+        </CellDefinition>
+      </CellDefinitions>
+    </GridLayoutDefinition>
+  </ReportParametersLayout>
+  <EmbeddedImages>
+    <EmbeddedImage Name="Cogitatelogo">
+      <MIMEType>image/jpeg</MIMEType>
+      <ImageData>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
+niT9FIdrNPP0zoegtc2PSGtMk+Pw3HJHuzj3KToi5RUTvnldK/i4kn4q6RRtjYGN4DRERFhXtERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERf/Z</ImageData>
+    </EmbeddedImage>
+  </EmbeddedImages>
+</Report>
